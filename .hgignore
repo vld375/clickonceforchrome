@@ -16,6 +16,7 @@ bin
 *.user
 ipch
 Debug
+Release
 *sdf
 
 syntax: regexp
