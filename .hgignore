@@ -1,0 +1,22 @@
+syntax: glob
+*.proj
+*.snk
+*.log
+*.nativeproj
+*.err
+*.trc
+tags
+tagfiles.txt
+*.dll
+obj
+bin
+*.suo
+*.sln
+*.slnhash
+*.user
+ipch
+Debug
+*sdf
+
+syntax: regexp
+^Firefox_3.6
