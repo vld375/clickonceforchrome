@@ -8,11 +8,11 @@ static NPNetscapeFuncs* g_pPluginFuncs;
 // Exported functions
 NPError WINAPI NP_GetEntryPoints(NPPluginFuncs* pFuncs)
 {
-	if (pFuncs == NULL)
-		return NPERR_INVALID_FUNCTABLE_ERROR;
-	
-	pFuncs->version = (NP_VERSION_MAJOR <<8) | NP_VERSION_MINOR;
-	pFuncs->newp = NPP_New;
+    if (pFuncs == NULL)
+        return NPERR_INVALID_FUNCTABLE_ERROR;
+    
+    pFuncs->version = (NP_VERSION_MAJOR <<8) | NP_VERSION_MINOR;
+    pFuncs->newp = NPP_New;
     pFuncs->destroy = NPP_Destroy;
     pFuncs->setwindow = NPP_SetWindow;
     pFuncs->newstream = NPP_NewStream;
@@ -22,8 +22,8 @@ NPError WINAPI NP_GetEntryPoints(NPPluginFuncs* pFuncs)
     pFuncs->write = NPP_Write;
     pFuncs->print = NPP_Print;
     pFuncs->javaClass = NULL;
-	
-	return NPERR_NO_ERROR;
+    
+    return NPERR_NO_ERROR;
 }
 
 NPError WINAPI NP_Initialize(NPNetscapeFuncs* pFuncs)
@@ -36,14 +36,14 @@ NPError WINAPI NP_Initialize(NPNetscapeFuncs* pFuncs)
     if(HIBYTE(pFuncs->version) > NP_VERSION_MAJOR)
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
 
-	g_pPluginFuncs = pFuncs;
+    g_pPluginFuncs = pFuncs;
 
-	return NPERR_NO_ERROR;
+    return NPERR_NO_ERROR;
 }
 
 NPError OSCALL NP_Shutdown()
 {
-	return NPERR_NO_ERROR;
+    return NPERR_NO_ERROR;
 }
 
 //
@@ -57,7 +57,7 @@ NPError NPP_New(NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc
 
 NPError NPP_Destroy (NPP instance, NPSavedData** save)
 {
-	return NPERR_NO_ERROR;
+    return NPERR_NO_ERROR;
 }
 
 NPError NPP_SetWindow (NPP instance, NPWindow* pNPWindow)
@@ -71,12 +71,12 @@ NPError NPP_SetWindow (NPP instance, NPWindow* pNPWindow)
         SetWindowLongPtr(mywindow, GWLP_USERDATA, (LONG)instance->pdata);
     }
 
-	return NPERR_NO_ERROR;
+    return NPERR_NO_ERROR;
 }
 
 NPError NPP_NewStream(NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable, uint16_t* stype)
 {
-	return NPERR_NO_ERROR;
+    return NPERR_NO_ERROR;
 }
 
 int32_t NPP_WriteReady (NPP instance, NPStream *stream)
@@ -87,7 +87,7 @@ int32_t NPP_WriteReady (NPP instance, NPStream *stream)
 int32_t NPP_Write (NPP instance, NPStream *stream, int32_t offset, int32_t len, void *buffer)
 {
     // The browser likes to check that we consumed all the data that it fed us so return the length or it will come back asking us to clean our plate.
-	return len;
+    return len;
 }
 
 NPError NPP_DestroyStream (NPP instance, NPStream *stream, NPError reason)
@@ -100,7 +100,7 @@ NPError NPP_DestroyStream (NPP instance, NPStream *stream, NPError reason)
         LaunchClickOnceApp(stream->url);
     }
 
-	return NPERR_NO_ERROR;
+    return NPERR_NO_ERROR;
 }
 
 void NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname)
@@ -109,7 +109,7 @@ void NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname)
 
 void NPP_Print (NPP instance, NPPrint* printInfo)
 {
-	// Wow, either you're really fast or it's time for a new computer.
+    // Wow, either you're really fast or it's time for a new computer.
 }
 
 
