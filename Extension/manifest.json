@@ -7,7 +7,4 @@
     "plugins" : [
         { "path": "plugin/npclickonce.dll", "public": true }
     ],
-    "permissions" : [
-        "http://*/*.application"
-    ]
 }
