@@ -14,9 +14,12 @@
                     embed.setAttribute('type', 'application/x-ms-application');
                     embed.setAttribute('width', 0);
                     embed.setAttribute('height', 0);
+                    // Have to add the embed to the document for it
+                    // to actually instantiate.
                     document.body.appendChild(embed);
                     embed.launchClickOnce(element.href);
-                    document.body.removeChild(embed);
+                    // Don't remove the embed right away b/c it can
+                    // cancel the download of the .application.
                     return false;
                 }
             }
