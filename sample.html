@@ -1,8 +1,30 @@
 <!doctype html>
 <html>
+    <head>
+        <script type="text/javascript">
+            // To automatically redirect all .application links to the scriptable plugin hook the document click function
+            document.onclick = function(e)
+            {
+                e = e || window.event;
+                var element = e.target || e.srcElement;
+
+                if (element.tagName == 'A' && element.href.match(/\.application$/))
+                {
+                    var embed = document.createElement('embed');
+                    embed.setAttribute('type', 'application/x-ms-application');
+                    embed.setAttribute('width', 0);
+                    embed.setAttribute('height', 0);
+                    document.body.appendChild(embed);
+                    embed.launchClickOnce(element.href);
+                    document.body.removeChild(embed);
+                    return false;
+                }
+            }
+        </script>
+    </head>
     <body>
         <div id="foo"></div>
-        <!-- <a href="http://digitalsorcery.net/dropbox/slice/ScreenSlice.application">Launch application</a> -->
+        <a href="http://digitalsorcery.net/dropbox/slice/ScreenSlice.application">Launch application</a>
         <embed type="application/x-ms-application" width="0" height="0" />
         <script>
         function go()
@@ -13,10 +35,10 @@
             //embed.setAttribute("height", 0);
             //embed.setAttribute("type", "application/x-ms-application");
 
-            embed.launchApplication("http://digitalsorcery.net/dropbox/slice/ScreenSlice.application");
+            embed.launchClickOnce("http://digitalsorcery.net/dropbox/slice/ScreenSlice.application");
 
             var foo = document.getElementById("foo");
-            foo.innerText = "went";
+            foo.innerText = embed.version;
         }
         </script>
         <a href="#" onClick="go()">go</a>

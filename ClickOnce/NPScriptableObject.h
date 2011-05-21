@@ -47,9 +47,9 @@ protected:
     static bool _Construct(NPObject *npobj, const NPVariant *args, uint32_t argc, NPVariant *result);
 
     static NPClass _npclass;
-private:
-    NPP _npp;
 
+
+    NPP _npp;
 };
 
 template<class T>

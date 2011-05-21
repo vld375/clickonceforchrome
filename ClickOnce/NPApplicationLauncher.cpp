@@ -6,20 +6,20 @@
 NPApplicationLauncher::NPApplicationLauncher(NPP instance)
     : NPScriptableObject<NPApplicationLauncher>(instance)
 {
-    launchIdentifier = GetStringIdentifier("launchApplication");
+    launchIdentifier = GetStringIdentifier("launchClickOnce");
+    versionString = GetStringIdentifier("version");
 }
 
 NPApplicationLauncher::~NPApplicationLauncher(void)
 {
 }
 
+
+// If this logic ever needs to get significantly more complex
+// it will probably make sense to create a map<NPIdentifier, method>
 bool NPApplicationLauncher::HasMethod(NPIdentifier method)
 {
-    if (method == this->launchIdentifier)
-    {
-        return true;
-    }
-    return false;
+    return (method == launchIdentifier);
 }
 
 bool NPApplicationLauncher::Invoke(NPIdentifier method, const NPVariant* args, uint32_t argc, NPVariant* result)
@@ -29,8 +29,25 @@ bool NPApplicationLauncher::Invoke(NPIdentifier method, const NPVariant* args, u
         NPVARIANT_IS_STRING(args[0]))
     {
         NPString url = NPVARIANT_TO_STRING(args[0]);
-        LaunchClickOnceApp(url.UTF8Characters);
+        SafeLaunchClickOnceApp(_npp, url.UTF8Characters);
         return true;
     }
+    return false;
+}
+
+bool NPApplicationLauncher::HasProperty(NPIdentifier name)
+{
+    return name == versionString;
+}
+
+bool NPApplicationLauncher::GetProperty(NPIdentifier name, NPVariant* result)
+{
+    if (name == versionString && result != NULL)
+    {
+        char version[] = "1.2";
+        *result = NPStrDup("1.2", ARRAYSIZE(version));
+        return true;
+    }
+    result = NULL;
     return false;
 }

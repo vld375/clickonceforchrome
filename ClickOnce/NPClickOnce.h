@@ -12,7 +12,7 @@ extern "C"
 
 static NPNetscapeFuncs* g_pPluginFuncs;
 
-NPIdentifier GetStringIdentifier(NPUTF8* name);
+
 
 // Functions that the plugin must implement and return via NP_GetEntryPoints() to the browser
 
@@ -28,12 +28,16 @@ void NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname);
 void NPP_Print (NPP instance, NPPrint* printInfo);
 
 
-// Utiliti functions
+// Utility functions
 
 void GoBack(NPP);
 void LaunchClickOnceApp(const char* url);
 LRESULT PluginWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+NPIdentifier GetStringIdentifier(NPUTF8* name);
+NPVariant NPStrDup(NPUTF8* str, int len);
+const int NOTIFY_SKIP_GOBACK = 42;
+void SafeLaunchClickOnceApp(NPP instance, const NPUTF8* url);
 
 #define CHECK_NULL(x) if ((x) == NULL) goto Cleanup;
 #define CHECK_BOOL(x) if ((x) == false) goto Cleanup;

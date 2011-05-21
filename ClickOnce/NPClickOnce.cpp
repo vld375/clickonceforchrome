@@ -92,7 +92,10 @@ int32_t NPP_Write (NPP instance, NPStream *stream, int32_t offset, int32_t len, 
 
 NPError NPP_DestroyStream (NPP instance, NPStream *stream, NPError reason)
 {
-    GoBack(instance);
+    if (stream->notifyData != &NOTIFY_SKIP_GOBACK)
+    {
+        GoBack(instance);
+    }
     
     // If the browser was not able to successfully download the file then I'm not launching it!
     if (reason == NPERR_NO_ERROR)
@@ -123,7 +126,6 @@ NPError NPP_GetValue(NPP instance, NPPVariable variable, void* retValue)
         return NPERR_NO_ERROR;
 	}
     return NPERR_GENERIC_ERROR;
-	
 }
 
 //
@@ -182,6 +184,15 @@ void LaunchClickOnceApp(const char* url)
     int result = CreateProcessA(NULL, szArgs, NULL, NULL, FALSE, 0, NULL, szSystem, &si, &pi);
 }
 
+// Use NPN_URLNotify to download the .application before launching it.
+// This guaruntees that the browser did in fact have access to the URL
+// before it delegated the download to ClickOnce (which will download the 
+// file again using IE and IE's policies.)
+void SafeLaunchClickOnceApp(NPP instance, const NPUTF8* url)
+{
+    g_pPluginFuncs->geturlnotify(instance, url, NULL, (void*)&NOTIFY_SKIP_GOBACK);
+}
+
 
 LRESULT PluginWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -210,4 +221,15 @@ NPIdentifier GetStringIdentifier(NPUTF8* name)
     return g_pPluginFuncs->getstringidentifier(name);
 }
 
+NPVariant NPStrDup(NPUTF8* str, int len)
+{
+    char* outBuffer = (char*)g_pPluginFuncs->memalloc(len);
+    NPVariant variant;
+    if (outBuffer)
+    {
+        strncpy(outBuffer, str, len);
+        STRINGZ_TO_NPVARIANT(outBuffer, variant);
+    }
+    return variant;
+}
 
