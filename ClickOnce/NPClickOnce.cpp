@@ -22,6 +22,7 @@ NPError WINAPI NP_GetEntryPoints(NPPluginFuncs* pFuncs)
     pFuncs->print = NPP_Print;
     pFuncs->javaClass = NULL;
     pFuncs->getvalue = NPP_GetValue;
+    pFuncs->urlnotify = NPP_URLNotify;
     
     return NPERR_NO_ERROR;
 }
@@ -114,6 +115,10 @@ void NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname)
 void NPP_Print (NPP instance, NPPrint* printInfo)
 {
     // Wow, either you're really fast or it's time for a new computer.
+}
+
+void NPP_URLNotify(NPP instance, const char* url, NPReason reason, void* notifyData)
+{
 }
 
 NPError NPP_GetValue(NPP instance, NPPVariable variable, void* retValue)

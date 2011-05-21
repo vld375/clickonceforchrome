@@ -26,7 +26,7 @@ int32_t NPP_Write (NPP instance, NPStream *stream, int32_t offset, int32_t len, 
 NPError NPP_DestroyStream (NPP instance, NPStream *stream, NPError reason);
 void NPP_StreamAsFile (NPP instance, NPStream* stream, const char* fname);
 void NPP_Print (NPP instance, NPPrint* printInfo);
-
+void  NPP_URLNotify(NPP instance, const char* url, NPReason reason, void* notifyData);
 
 // Utility functions
 
