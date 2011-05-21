@@ -21,7 +21,7 @@ NPError WINAPI NP_GetEntryPoints(NPPluginFuncs* pFuncs)
     pFuncs->write = NPP_Write;
     pFuncs->print = NPP_Print;
     pFuncs->javaClass = NULL;
-	pFuncs->getvalue = NPP_GetValue;
+    pFuncs->getvalue = NPP_GetValue;
     
     return NPERR_NO_ERROR;
 }
@@ -92,7 +92,8 @@ int32_t NPP_Write (NPP instance, NPStream *stream, int32_t offset, int32_t len, 
 
 NPError NPP_DestroyStream (NPP instance, NPStream *stream, NPError reason)
 {
-    if (stream->notifyData != &NOTIFY_SKIP_GOBACK)
+    if (stream->notifyData != &NOTIFY_SKIP_GOBACK &&
+       !(IsTokenValueInQueryString(stream->url, "cofc_goback=false")))
     {
         GoBack(instance);
     }
@@ -117,14 +118,14 @@ void NPP_Print (NPP instance, NPPrint* printInfo)
 
 NPError NPP_GetValue(NPP instance, NPPVariable variable, void* retValue)
 {
-	if (variable == NPPVpluginScriptableNPObject)
-	{
+    if (variable == NPPVpluginScriptableNPObject)
+    {
         NPObject* plugin = NPApplicationLauncher::CreateInstance(instance);
         g_pPluginFuncs->retainobject(plugin);
         
         *(void**)retValue = plugin;
         return NPERR_NO_ERROR;
-	}
+    }
     return NPERR_GENERIC_ERROR;
 }
 
@@ -137,20 +138,19 @@ void GoBack(NPP instance)
     NPIdentifier historyID = g_pPluginFuncs->getstringidentifier("history");
     NPIdentifier goFuncID = g_pPluginFuncs->getstringidentifier("go");
     NPObject* window;
-    g_pPluginFuncs->getvalue(instance, NPNVWindowNPObject, &window);
+    CHECK_NPERR(g_pPluginFuncs->getvalue(instance, NPNVWindowNPObject, &window));
     CHECK_NULL(window);
 
     CHECK_BOOL(g_pPluginFuncs->hasproperty(instance, window, historyID));
     NPVariant histv;
-    g_pPluginFuncs->getproperty(instance, window, historyID, &histv);
+    CHECK_BOOL(g_pPluginFuncs->getproperty(instance, window, historyID, &histv));
     NPObject* history = NPVARIANT_TO_OBJECT(histv);
     CHECK_NULL(history);
 
     CHECK_BOOL(g_pPluginFuncs->hasmethod(instance, history, goFuncID))
     
     NPVariant negOne;
-    negOne.type =NPVariantType_Int32;
-    negOne.value.intValue = -1;
+    INT32_TO_NPVARIANT(-1, negOne);
 
     NPVariant result;
     g_pPluginFuncs->invoke(instance, history, goFuncID, &negOne, 1, &result);
@@ -231,5 +231,38 @@ NPVariant NPStrDup(NPUTF8* str, int len)
         STRINGZ_TO_NPVARIANT(outBuffer, variant);
     }
     return variant;
+}
+
+bool IsTokenValueInQueryString(const char* url, const char* pTokenValue)
+{
+    bool retVal = false;
+    CHECK_NULL(pTokenValue);
+
+    const char* pQueryString = strchr(url, '?');
+    CHECK_NULL(pQueryString);
+    pQueryString++; // at worst this advances us to the '\0';
+    size_t tokenLen = strlen(pTokenValue);
+
+    // dup the string for local modification
+    char dupQueryString[2083]; //INTERNET_MAX_URL_LENGTH;
+    CHECK_ZERO(strncpy_s(dupQueryString, ARRAYSIZE(dupQueryString) , pQueryString, strlen(pQueryString)));
+    
+    char* pContext = NULL;
+    char* pCurToken=NULL;
+    char* pstrtok = dupQueryString;
+    while(pCurToken = strtok_s(pstrtok, "&;", &pContext))
+    {
+        pstrtok=NULL;
+        int curTokenLen = strlen(pCurToken);
+        if (curTokenLen == tokenLen &&
+            strnicmp(pCurToken, pTokenValue, tokenLen)==0)
+        {
+            retVal = true;
+            break;
+        }
+    }
+
+Cleanup:
+    return retVal;
 }
 

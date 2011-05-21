@@ -39,5 +39,9 @@ NPVariant NPStrDup(NPUTF8* str, int len);
 const int NOTIFY_SKIP_GOBACK = 42;
 void SafeLaunchClickOnceApp(NPP instance, const NPUTF8* url);
 
-#define CHECK_NULL(x) if ((x) == NULL) goto Cleanup;
-#define CHECK_BOOL(x) if ((x) == false) goto Cleanup;
+bool IsTokenValueInQueryString(const char* url, const char* pTokenValue);
+
+#define CHECK_NULL(x) do { if ((x) == NULL) goto Cleanup; } while(0);
+#define CHECK_BOOL(x) do { if ((x) == false) goto Cleanup; } while(0);
+#define CHECK_NPERR(x) do { if ((x) != NPERR_NO_ERROR) goto Cleanup; } while(0);
+#define CHECK_ZERO(x) do { if ((x) != 0) goto Cleanup; } while(0);
