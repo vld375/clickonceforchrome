@@ -2,8 +2,7 @@
 //
 #include "stdafx.h"
 #include "NPClickOnce.h"
-
-static NPNetscapeFuncs* g_pPluginFuncs;
+#include "NPApplicationLauncher.h"
 
 // Exported functions
 NPError WINAPI NP_GetEntryPoints(NPPluginFuncs* pFuncs)
@@ -22,6 +21,7 @@ NPError WINAPI NP_GetEntryPoints(NPPluginFuncs* pFuncs)
     pFuncs->write = NPP_Write;
     pFuncs->print = NPP_Print;
     pFuncs->javaClass = NULL;
+	pFuncs->getvalue = NPP_GetValue;
     
     return NPERR_NO_ERROR;
 }
@@ -112,6 +112,19 @@ void NPP_Print (NPP instance, NPPrint* printInfo)
     // Wow, either you're really fast or it's time for a new computer.
 }
 
+NPError NPP_GetValue(NPP instance, NPPVariable variable, void* retValue)
+{
+	if (variable == NPPVpluginScriptableNPObject)
+	{
+        NPObject* plugin = NPApplicationLauncher::CreateInstance(instance);
+        g_pPluginFuncs->retainobject(plugin);
+        
+        *(void**)retValue = plugin;
+        return NPERR_NO_ERROR;
+	}
+    return NPERR_GENERIC_ERROR;
+	
+}
 
 //
 // Utility functions
@@ -185,3 +198,16 @@ LRESULT PluginWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     WNDPROC oldWndProc = (WNDPROC) GetWindowLong(hwnd, GWLP_USERDATA);
     return CallWindowProc(oldWndProc, hwnd, uMsg, wParam, lParam);
 }
+
+// Implement plugin function wrappers to call through g_pPluginFuncs
+NPObject* NPN_CreateObject(NPP instance, NPClass* npClass)
+{
+    return g_pPluginFuncs->createobject(instance, npClass);
+}
+
+NPIdentifier GetStringIdentifier(NPUTF8* name)
+{
+    return g_pPluginFuncs->getstringidentifier(name);
+}
+
+

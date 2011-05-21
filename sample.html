@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+    <body>
+        <div id="foo"></div>
+        <!-- <a href="http://digitalsorcery.net/dropbox/slice/ScreenSlice.application">Launch application</a> -->
+        <embed type="application/x-ms-application" width="0" height="0" />
+        <script>
+        function go()
+        {
+            var embed = document.embeds[0];
+            //var embed = document.createElement('embed');
+            //embed.setAttribute("width", 0);
+            //embed.setAttribute("height", 0);
+            //embed.setAttribute("type", "application/x-ms-application");
+
+            embed.launchApplication("http://digitalsorcery.net/dropbox/slice/ScreenSlice.application");
+
+            var foo = document.getElementById("foo");
+            foo.innerText = "went";
+        }
+        </script>
+        <a href="#" onClick="go()">go</a>
+    </body>
+</html>

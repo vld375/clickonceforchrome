@@ -1,10 +1,17 @@
 {
     "name": "ClickOnce for Chrome",
-    "version": "1.1",
+    "version": "1.2",
     "description": "Adds basic support for launching ClickOnce applications.",
     "id": "gcldpeebckfiigjliipoheefjcmchlng",
     "format_version": 1,
     "plugins" : [
         { "path": "plugin/npclickonce.dll", "public": true }
+    ],
+    "not_content_scripts" : [
+        {
+            "matches": [ "<all_urls>" ],
+            "js": [ "content.js" ],
+            "run_at": "document_start"
+        }
     ]
 }
