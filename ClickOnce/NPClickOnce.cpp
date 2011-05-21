@@ -171,12 +171,12 @@ void LaunchClickOnceApp(const char* url)
     // but lets be honest if it didn't happen for 4.0 it's not likely for 5.0
     
     GetSystemDirectoryA(szProcess, ARRAYSIZE(szProcess));
-    strncat(szProcess, "\\PresentationHost.exe", ARRAYSIZE(szProcess));
+    strncat_s(szProcess, "\\PresentationHost.exe", ARRAYSIZE(szProcess));
 
     CHAR szArgs[2083] = {0}; // todo: allow unlimited url length?
-    strncat(szArgs, szProcess, ARRAYSIZE(szArgs));
-    strncat(szArgs, " -LaunchApplication ", ARRAYSIZE(szArgs));
-    strncat(szArgs, url,  ARRAYSIZE(szArgs));
+    strncat_s(szArgs, szProcess, ARRAYSIZE(szArgs));
+    strncat_s(szArgs, " -LaunchApplication ", ARRAYSIZE(szArgs));
+    strncat_s(szArgs, url,  ARRAYSIZE(szArgs));
     
     STARTUPINFOA si = { sizeof(si) };
     PROCESS_INFORMATION pi = { 0 };
@@ -227,7 +227,7 @@ NPVariant NPStrDup(NPUTF8* str, int len)
     NPVariant variant;
     if (outBuffer)
     {
-        strncpy(outBuffer, str, len);
+        strncpy_s(outBuffer, len, str, len);
         STRINGZ_TO_NPVARIANT(outBuffer, variant);
     }
     return variant;
@@ -255,7 +255,7 @@ bool IsTokenValueInQueryString(const char* url, const char* pTokenValue)
         pstrtok=NULL;
         int curTokenLen = strlen(pCurToken);
         if (curTokenLen == tokenLen &&
-            strnicmp(pCurToken, pTokenValue, tokenLen)==0)
+            _strnicmp(pCurToken, pTokenValue, tokenLen)==0)
         {
             retVal = true;
             break;
