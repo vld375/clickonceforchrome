@@ -35,7 +35,9 @@ void LaunchClickOnceApp(const char* url);
 LRESULT PluginWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 NPIdentifier GetStringIdentifier(NPUTF8* name);
-NPVariant NPStrDup(NPUTF8* str, int len);
+NPString NPStrDup(const NPUTF8* str, int len);
+inline NPString NPStrDup(NPString str) { return NPStrDup(str.UTF8Characters, str.UTF8Length); }
+void NPFreeString(NPString str);
 const int NOTIFY_SKIP_GOBACK = 42;
 void SafeLaunchClickOnceApp(NPP instance, const NPUTF8* url);
 

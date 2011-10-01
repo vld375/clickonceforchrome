@@ -29,7 +29,11 @@ bool NPApplicationLauncher::Invoke(NPIdentifier method, const NPVariant* args, u
         NPVARIANT_IS_STRING(args[0]))
     {
         NPString url = NPVARIANT_TO_STRING(args[0]);
+        // ISSUE 7 - NPString might not be NULL terminated
+        // copy the string to ensure null termination.
+        url = NPStrDup(url);
         SafeLaunchClickOnceApp(_npp, url.UTF8Characters);
+        NPFreeString(url);
         return true;
     }
     return false;
@@ -44,8 +48,9 @@ bool NPApplicationLauncher::GetProperty(NPIdentifier name, NPVariant* result)
 {
     if (name == versionString && result != NULL)
     {
-        char version[] = "1.2";
-        *result = NPStrDup("1.2", ARRAYSIZE(version));
+        char version[] = "1.2.1";
+        NPString value = NPStrDup("1.2", ARRAYSIZE(version));
+        STRINGN_TO_NPVARIANT(value.UTF8Characters, value.UTF8Length, *result);
         return true;
     }
     result = NULL;

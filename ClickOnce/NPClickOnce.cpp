@@ -198,7 +198,6 @@ void SafeLaunchClickOnceApp(NPP instance, const NPUTF8* url)
     g_pPluginFuncs->geturlnotify(instance, url, NULL, (void*)&NOTIFY_SKIP_GOBACK);
 }
 
-
 LRESULT PluginWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch(uMsg)
@@ -226,16 +225,29 @@ NPIdentifier GetStringIdentifier(NPUTF8* name)
     return g_pPluginFuncs->getstringidentifier(name);
 }
 
-NPVariant NPStrDup(NPUTF8* str, int len)
+NPString NPStrDup(const NPUTF8* str, int len)
 {
-    char* outBuffer = (char*)g_pPluginFuncs->memalloc(len);
-    NPVariant variant;
+    NPString outStr;
+    outStr.UTF8Length = 0;
+    int out_len = len + 1; // for trailing null
+    char* outBuffer = (char*)g_pPluginFuncs->memalloc(out_len+1);
     if (outBuffer)
     {
-        strncpy_s(outBuffer, len, str, len);
-        STRINGZ_TO_NPVARIANT(outBuffer, variant);
+        strncpy_s(outBuffer, out_len+1, str, len);
+        outStr.UTF8Length = len;
+        outStr.UTF8Characters = outBuffer;
     }
-    return variant;
+    return outStr;
+}
+
+void NPFreeString(NPString str)
+{
+    if (str.UTF8Length > 0)
+    {
+        g_pPluginFuncs->memfree((void*)str.UTF8Characters);
+        str.UTF8Characters = nullptr;
+        str.UTF8Length = 0;
+    }
 }
 
 bool IsTokenValueInQueryString(const char* url, const char* pTokenValue)
