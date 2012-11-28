@@ -1,9 +1,12 @@
 ﻿{
     "name": "ClickOnce for Google Chrome™",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "manifest_version": 2,
     "description": "Adds basic support for launching ClickOnce applications.",
     "plugins" : [
         { "path": "plugin/npclickonce.dll", "public": true }
-    ]
+    ],
+   "requirements": {
+      "plugins": { "npapi": false }
+   }
 }
